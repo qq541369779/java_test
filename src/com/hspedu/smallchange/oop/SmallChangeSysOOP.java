@@ -125,7 +125,7 @@ public class SmallChangeSysOOP {
                 break;
             }
         }
-        // 当用户退出while循环，进行判断
+        // 当用户退出while循环，进行判断1
         if (choice.equals("y")) {
             loop = false;
         }
