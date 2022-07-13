@@ -59,7 +59,7 @@ public class Utility {
     public static int readInt() {
         int n;
         for (; ; ) {
-            String str = readKeyBoard(2, false);//一个整数，长度<=2位
+            String str = readKeyBoard(10, false);//一个整数，长度<=2位
             try {
                 n = Integer.parseInt(str);//将字符串转换成整数
                 break;

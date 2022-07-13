@@ -4,6 +4,8 @@ import com.hspedu.houserent.domain.House;
 import com.hspedu.houserent.service.HouseService;
 import com.hspedu.houserent.utils.Utility;
 
+import javax.swing.*;
+
 /**
  * 1.显示界面
  * 2.接收用户的输入
@@ -16,13 +18,35 @@ public class HouseView {
     private char key = ' '; //接收用户选择
     private HouseService houseService = new HouseService(10); // 设置数组的大小为10
 
+    // 编写addHouse() 接收输入，创建House对象，调用add方法
+    public void addHouse() {
+        System.out.println("==========添加房屋==========");
+        System.out.println("姓名：");
+        String name = Utility.readString(8);
+        System.out.println("电话：");
+        String phone = Utility.readString(12);
+        System.out.println("地址：");
+        String address = Utility.readString(16);
+        System.out.println("月租：");
+        int rent = Utility.readInt();
+        System.out.println("状态：");
+        String state = Utility.readString(3);
+        // 创建一个新的House对象，注意id 是系统分配的
+        House newHouse = new House(0, name, phone, address, rent, state);
+        if(houseService.add(newHouse)){
+            System.out.println("==========房屋列添加成功==========");
+        }else {
+            System.out.println("==========房屋列添加失败==========");
+        }
+    }
+
     // 编写listHouses()显示房屋列表
     public void listHouses() {
         System.out.println("==========房屋列表单==========");
         System.out.println("编号\t\t房主\t\t电话\t\t地址\t\t月租\t\t状态(未出租/已出租)");
         House[] houses = houseService.list(); // 得到所有房屋信息
         for (int i = 0; i < houses.length; i++) {
-            if (houses[i] == null){ // 如果为null，就不用在显示了
+            if (houses[i] == null) { // 如果为null，就不用在显示了
                 break;
             }
             System.out.println(houses[i]);
@@ -46,7 +70,7 @@ public class HouseView {
 
             switch (key) {
                 case '1':
-                    System.out.println("新增");
+                    addHouse();
                     break;
                 case '2':
                     System.out.println("查找");
