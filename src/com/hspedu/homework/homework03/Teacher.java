@@ -1,4 +1,4 @@
-package com.hspedu.homework;
+package com.hspedu.homework.homework03;
 
 public class Teacher {
     //(1)要求有属性 “姓名name”,“年龄age”,“职称post”,“基本工资salary”

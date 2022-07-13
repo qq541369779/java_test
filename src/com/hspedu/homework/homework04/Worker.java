@@ -1,6 +1,6 @@
-package com.hspedu.homework;
+package com.hspedu.homework.homework04;
 
-public class Worker extends Employee{
+public class Worker extends Employee {
 
     public Worker(String name, double daySal, int workDays, double grade) {
         super(name, daySal, workDays, grade);

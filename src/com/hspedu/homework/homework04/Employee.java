@@ -1,4 +1,4 @@
-package com.hspedu.homework;
+package com.hspedu.homework.homework04;
 
 public class Employee {
     //(3)员工属性:姓名，单日工资，工作天数

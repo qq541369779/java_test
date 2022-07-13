@@ -1,4 +1,4 @@
-package com.hspedu.homework;
+package com.hspedu.homework.homework04;
 
 public class Homework04 {
     /**
