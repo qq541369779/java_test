@@ -122,7 +122,7 @@ public class Utility {
 	 * @return Y或N
 	 */
     public static char readConfirmSelection() {
-        System.out.println("请输入你的选择(Y/N)");
+        System.out.println("请输入你的选择(Y/N),小心选择：");
         char c;
         for (; ; ) {//无限循环
         	//在这里，将接受到字符，转成了大写字母
