@@ -7,6 +7,7 @@ public class shanghaijisuan {
     public static void main(String[] args) {
 
         System.out.println("造成的伤害为：" + formula());
+
     }
 
     // 伤害
@@ -59,7 +60,8 @@ public class shanghaijisuan {
         }
 
         no_skill_bonus = 0.5*(hero-monster) + 0.5*((hero*hero)/(hero+monster));
-        skill_bonus = num * res * damage * no_skill_bonus*(hero_skill/100) + hero_skill_hurt;
+        skill_bonus = num * (1+res) * damage * no_skill_bonus*(hero_skill/100) + hero_skill_hurt;
+
         System.out.println("英雄造成伤害的计算公式:最终伤害 = 消除个数/10 * 克制关系 * 暴击系数 * 基础伤害 * 技能系数百分比 + 额外伤害");
         System.out.println("消除的方块数量："+block+"\n消除方块基数:"+num+"\n克制关系："+(res*100)+"%"+"\n暴击系数："+damage+"\n基础伤害："+
                 no_skill_bonus+"\n技能百分比伤害："+hero_skill+"%"+"\n额外伤害："+hero_skill_hurt);
