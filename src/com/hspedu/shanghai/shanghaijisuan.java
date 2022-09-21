@@ -54,13 +54,11 @@ public class shanghaijisuan {
 
 
         // 设置克制关系
-        double res = 1; // 默认无克制
+        double res = 0; // 默认无克制
         if (restraint == 1) {
             res = 0.1;
         } else if (restraint == 2) {
             res = -0.1;
-        } else {
-            res = 1;
         }
 
         no_skill_bonus = 0.5 * (hero - monster) + 0.5 * ((hero * hero) / (hero + monster));

@@ -1,4 +1,4 @@
-package com.hspedu.tankgame2;
+package com.hspedu.tankgame3;
 
 import javax.swing.*;
 import java.awt.*;
