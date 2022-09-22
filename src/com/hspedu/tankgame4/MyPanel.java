@@ -37,6 +37,8 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
             // 设置方向
             enemyTank.setDirect(2);
+            // 启动敌人坦克线程，让他动起来
+            new Thread(enemyTank).start();
             // 给enemyTank 加入一颗子弹
             Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
             // 加入enemyTank的Vector 成员
@@ -62,9 +64,18 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         // 调用绘制坦克的方法，画自己的坦克
         drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 1);
 
-        // 画出hero射击的子弹
-        if (hero.shot != null && hero.shot.isLive == true) {
-            g.draw3DRect(hero.shot.x, hero.shot.y, 1, 1, false);
+        // 画出hero射击的子弹，只能发射一颗子弹
+//        if (hero.shot != null && hero.shot.isLive == true) {
+//            g.draw3DRect(hero.shot.x, hero.shot.y, 1, 1, false);
+//        }
+        // 将hero的子弹集合 shots，遍历取出绘制,这样就可以打出多个子弹
+        for (int i = 0; i < hero.shots.size(); i++) {
+            Shot shot = hero.shots.get(i);
+            if (shot != null && shot.isLive == true) {
+                g.draw3DRect(shot.x, shot.y, 1, 1, false);
+            } else { // 如果该shot对象已经无效，就从shots集合中拿掉
+                hero.shots.remove(shot);
+            }
         }
 
         // 画出bombs 集合中有对象，就画出
@@ -105,8 +116,6 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         enemyTank.shots.remove(shot);
                     }
                 }
-            }else { // 敌人坦克被消灭后，需要把被消灭的坦克从Vector集合中移除，不然还有打被消灭坦克位置还会有爆炸效果
-                enemyTanks.remove(enemyTank);
             }
         }
 
@@ -171,6 +180,26 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         }
     }
 
+    // 如果我们的坦克可以发射多个子弹
+    // 在判断我方子弹是否击中敌人坦克时，就需要把我们的子弹集合中
+    // 所有的子弹，都取出和敌人的所有坦克，进行判断
+    public void hitEnemyTank(){
+        // 遍历我们的子弹
+        for (int j =0;j<hero.shots.size();j++){
+            Shot shot = hero.shots.get(j);
+            // 判断是否击中了敌人坦克
+            if (shot != null && shot.isLive) { // 当我的子弹还存活
+
+                // 遍历敌人所有的坦克
+                for (int i = 0; i < enemyTanks.size(); i++) {
+                    EnemyTank enemyTank = enemyTanks.get(i);
+                    hitTank(shot, enemyTank);
+                }
+            }
+        }
+
+    }
+
     // 编写方法，判断我方的子弹是否击中敌人坦克
     public void hitTank(Shot s, EnemyTank enemyTank) {
         // 判断s 击中坦克
@@ -181,6 +210,8 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 60) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    // 当我的子弹击中敌人坦克后，将enemyTank 从Vector中移除
+                    enemyTanks.remove(enemyTank);
                     // 创建Bomb对象，加入到bombs集合
                     Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
@@ -208,20 +239,33 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         // 让坦克根据按键改变方向
         if (e.getKeyCode() == KeyEvent.VK_W) { // 坦克方向向上 W键
             hero.setDirect(0);
-            hero.moveUp();
+            if (hero.getY() > 0) {
+                hero.moveUp();
+            }
         } else if (e.getKeyCode() == KeyEvent.VK_D) { // 坦克方向向右 D键
             hero.setDirect(1);
-            hero.moveRight();
+            if (hero.getX() + 60 < 1000) {
+                hero.moveRight();
+            }
         } else if (e.getKeyCode() == KeyEvent.VK_S) { // 坦克方向向下 S键
             hero.setDirect(2);
-            hero.moveDown();
+            if (hero.getY() + 60 < 750) {
+                hero.moveDown();
+            }
         } else if (e.getKeyCode() == KeyEvent.VK_A) { // 坦克方向向左 A键
             hero.setDirect(3);
-            hero.moveLeft();
+            if (hero.getX() > 0) {
+                hero.moveLeft();
+            }
         }
         // 如果用户按下的是J键，就发射子弹
         if (e.getKeyCode() == KeyEvent.VK_J) {
             System.out.println("用户按下了J，开始射击");
+            // 判断hero的子弹是否销毁,发射一颗子弹
+//            if (hero.shot == null || !hero.shot.isLive) {
+//                hero.shotEnemyTank();
+//            }
+            // 发射多颗子弹
             hero.shotEnemyTank();
         }
 
@@ -243,15 +287,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            // 判断是否击中了敌人坦克
-            if (hero.shot != null && hero.shot.isLive) { // 当我的子弹还存活
-
-                // 遍历敌人所有的坦克
-                for (int i = 0; i < enemyTanks.size(); i++) {
-                    EnemyTank enemyTank = enemyTanks.get(i);
-                    hitTank(hero.shot, enemyTank);
-                }
-            }
+            hitEnemyTank
             // 重绘
             this.repaint();
         }

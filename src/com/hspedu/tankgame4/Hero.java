@@ -1,9 +1,13 @@
 package com.hspedu.tankgame4;
 
+import java.util.Vector;
+
 public class Hero extends Tank {
 
     // 定义一个Shot对象，表示一个射击(线程)
     Shot shot = null;
+    // 可以发射多颗子弹
+    Vector<Shot> shots = new Vector<>();
 
     public Hero(int x, int y) {
         super(x, y);
@@ -11,10 +15,16 @@ public class Hero extends Tank {
 
     // 射击
     public void shotEnemyTank() {
+
+        // 发射多颗子弹怎么办，控制在我们的面板上，最多只有5颗
+        if (shots.size() == 5) {
+            return;
+        }
+
         // 创建Shot对象 ，根据当前的Hero对象的位置和方向来创建Shot
         switch (getDirect()) { // 得到Hero对象方向
             case 0: // 向上
-                shot = new Shot(getX() + 20,getY(), 0);
+                shot = new Shot(getX() + 20, getY(), 0);
                 break;
             case 1: // 向右
                 shot = new Shot(getX() + 60, getY() + 20, 1);
@@ -27,6 +37,8 @@ public class Hero extends Tank {
                 break;
         }
 
+        // 把新创建的shot放入到shots
+        shots.add(shot);
         new Thread(shot).start();
     }
 }
