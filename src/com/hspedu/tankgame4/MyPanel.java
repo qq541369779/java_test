@@ -1,4 +1,4 @@
-package com.hspedu.tankgame3;
+package com.hspedu.tankgame4;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.util.Vector;
 
 // 为了监听 键盘事件，实现KeyListener
 // 为了让Panel 不停的重绘子弹，需要将MyPanel 实现Runnable,当做一个线程使用
-public class MyPanel extends JPanel implements KeyListener,Runnable {
+public class MyPanel extends JPanel implements KeyListener, Runnable {
 
     // 定义我的坦克
     Hero hero = null;
@@ -27,6 +27,12 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
             EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
             // 设置方向
             enemyTank.setDirect(2);
+            // 给enemyTank 加入一颗子弹
+            Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
+            // 加入enemyTank的Vector 成员
+            enemyTank.shots.add(shot);
+            // 启动 shot 对象
+            new Thread(shot).start();
             // 加入
             enemyTanks.add(enemyTank);
         }
@@ -41,16 +47,28 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 1);
 
         // 画出hero射击的子弹
-        if (hero.shot != null && hero.shot.isLive == true){
-            g.draw3DRect(hero.shot.x,hero.shot.y,1,1,false);
+        if (hero.shot != null && hero.shot.isLive == true) {
+            g.draw3DRect(hero.shot.x, hero.shot.y, 1, 1, false);
         }
 
-            // 画出敌人的坦克，遍历Vector
-            for (int i = 0; i < enemyTanks.size(); i++) {
-                // 取出坦克
-                EnemyTank enemyTank = enemyTanks.get(i);
-                drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 0);
+        // 画出敌人的坦克，遍历Vector
+        for (int i = 0; i < enemyTanks.size(); i++) {
+            // 取出坦克
+            EnemyTank enemyTank = enemyTanks.get(i);
+            drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 0);
+            // 画出 enemyTank 所有子弹
+            for (int j = 0; j < enemyTank.shots.size(); j++) {
+                // 取出子弹
+                Shot shot = enemyTank.shots.get(j);
+                // 绘制, 绘制前需要判断子弹是否存活，存活才绘制
+                if (shot.isLive) { // isLive == true才绘制
+                    g.draw3DRect(shot.x, shot.y, 1, 1, false);
+                } else {
+                    // 子弹死亡，则需要从Vector移除，不然会继续绘制
+                    enemyTank.shots.remove(shot);
+                }
             }
+        }
 
     }
 
@@ -151,7 +169,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
 
     @Override
     public void run() { // 每隔100毫秒，重绘区域，刷新绘图区域，子弹就移动了
-        while (true){
+        while (true) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {

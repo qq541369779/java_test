@@ -1,4 +1,4 @@
-package com.hspedu.tankgame3;
+package com.hspedu.tankgame4;
 
 public class Hero extends Tank {
 

@@ -1,7 +1,5 @@
-package com.hspedu.tankgame3;
+package com.hspedu.tankgame4;
 
-
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 
 // 子弹射击
 public class Shot implements Runnable {

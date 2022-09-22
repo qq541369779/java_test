@@ -1,18 +1,18 @@
-package com.hspedu.tankgame3;
+package com.hspedu.tankgame4;
 
 import javax.swing.*;
 
-public class HspTankGame03 extends JFrame {
+public class HspTankGame04 extends JFrame {
 
     //定义MyPanel
     MyPanel mp = null;
 
     public static void main(String[] args) {
 
-        new HspTankGame03();
+        new HspTankGame04();
     }
 
-    public HspTankGame03(){
+    public HspTankGame04(){
 
         MyPanel mp = new MyPanel();
         // 将mp, 放入到Thread，并启动
