@@ -28,7 +28,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Image image3 = null;
 
     public MyPanel() {
-        hero = new Hero(100, 100); //初始化自己坦克
+        hero = new Hero(500, 500); //初始化自己坦克
         hero.setSpeed(2); // 设置坦克速度(像素)
 
         // 初始化敌人坦克
@@ -62,7 +62,9 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         g.fillRect(0, 0, 1000, 750); //填充矩形，默认黑色
 
         // 调用绘制坦克的方法，画自己的坦克
-        drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 1);
+        if(hero != null && hero.isLive){
+            drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 1);
+        }
 
         // 画出hero射击的子弹，只能发射一颗子弹
 //        if (hero.shot != null && hero.shot.isLive == true) {
@@ -183,25 +185,52 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     // 如果我们的坦克可以发射多个子弹
     // 在判断我方子弹是否击中敌人坦克时，就需要把我们的子弹集合中
     // 所有的子弹，都取出和敌人的所有坦克，进行判断
-    public void hitEnemyTank(){
-        // 遍历我们的子弹
-        for (int j =0;j<hero.shots.size();j++){
-            Shot shot = hero.shots.get(j);
-            // 判断是否击中了敌人坦克
-            if (shot != null && shot.isLive) { // 当我的子弹还存活
+    public void hitEnemyTank() {
+        // 遍历我们的子弹，多颗子弹
+//        for (int j = 0; j < hero.shots.size(); j++) {
+//            Shot shot = hero.shots.get(j);
+//            // 判断是否击中了敌人坦克
+//            if (shot != null && shot.isLive) { // 当我的子弹还存活
+//
+//                // 遍历敌人所有的坦克
+//                for (int i = 0; i < enemyTanks.size(); i++) {
+//                    EnemyTank enemyTank = enemyTanks.get(i);
+//                    hitTank(shot, enemyTank);
+//                }
+//            }
+//        }
+        // 单颗子弹。
+        if (hero.shot != null && hero.shot.isLive) { // 当我的子弹还存活
+            // 遍历敌人所有的坦克
+            for (int i = 0; i < enemyTanks.size(); i++) {
+                EnemyTank enemyTank = enemyTanks.get(i);
+                hitTank(hero.shot,enemyTank);
+            }
+        }
+    }
 
-                // 遍历敌人所有的坦克
-                for (int i = 0; i < enemyTanks.size(); i++) {
-                    EnemyTank enemyTank = enemyTanks.get(i);
-                    hitTank(shot, enemyTank);
+    // 编写方法，判断敌人坦克是否击中我的坦克
+    public void hitHero() {
+        // 遍历所有的敌人坦克
+        for (int i = 0; i < enemyTanks.size(); i++) {
+            // 取出敌人坦克
+            EnemyTank enemyTank = enemyTanks.get(i);
+            // 遍历enemyTank 对象所有子弹
+            for (int j = 0; j < enemyTank.shots.size(); j++) {
+                // 取出子弹
+                Shot shot = enemyTank.shots.get(j);
+                // 判断 shot 是否击中我的坦克
+                if (hero.isLive && shot.isLive) {
+                    hitTank(shot, hero);
                 }
             }
         }
-
     }
 
     // 编写方法，判断我方的子弹是否击中敌人坦克
-    public void hitTank(Shot s, EnemyTank enemyTank) {
+    // 什么时候判断，我方的子弹是否击中敌人坦克？run方法
+    // 后面我们将 enemyTank 改成 tank名称
+    public void hitTank(Shot s, Tank enemyTank) {
         // 判断s 击中坦克
         switch (enemyTank.getDirect()) {
             case 0: // 坦克向上
@@ -223,10 +252,16 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 40) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    // 当我的子弹击中敌人坦克后，将enemyTank 从Vector中移除
+                    enemyTanks.remove(enemyTank);
+                    // 创建Bomb对象，加入到bombs集合
+                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    bombs.add(bomb);
                 }
                 break;
         }
     }
+
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -287,7 +322,13 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            hitEnemyTank
+
+            // 判断是我们子弹是否击中了敌人坦克
+
+            // 判断是我们子弹是否击中了敌人坦克
+            hitEnemyTank();
+            // 判断敌人坦克是否击中我们
+            hitHero();
             // 重绘
             this.repaint();
         }
